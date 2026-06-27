@@ -4,7 +4,7 @@ Reproducible Python report generator for the project:
 
 **Body Composition Regulation After Successful Weight Loss - N-of-1 Case Study**
 
-Current scope: Draft v0.7 - Version 2 architecture + Chapter 4 Body Composition Analysis.
+Current scope: Draft v0.7.3 - centralized report date range + Chapter 4 Body Composition Analysis.
 
 ## Version 2 architecture
 
@@ -34,6 +34,24 @@ figures/
 output/
 report/
 ```
+
+
+## Report date range
+
+The report date range is configured in one place:
+
+```text
+src/health_report/common/config.py
+```
+
+Current values:
+
+```python
+REPORT_START_DATE = "2025-08-01"
+REPORT_END_DATE = "2026-06-27"
+```
+
+All loaders, the master dataframe builder, phase analysis, timeline overlays, and PDF naming should use this shared configuration. Do not hardcode report end dates inside analysis or visualization modules.
 
 ## Inputs
 
@@ -67,7 +85,7 @@ python src/generate_report.py
 ## Outputs
 
 - `data/processed/master_dataframe.csv`
-- `output/Personal_Weight_Regulation_Model_v0.7.pdf`
+- `output/Personal_Weight_Regulation_Model_v0.7.3.pdf`
 - `output/body_composition_metrics.csv`
 - `output/monthly_body_composition.csv`
 - `output/phase_summary.csv`

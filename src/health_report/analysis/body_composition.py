@@ -1,5 +1,6 @@
 from __future__ import annotations
 import pandas as pd
+from health_report.common.config import REPORT_END_DATE
 
 
 def monthly_summary(df: pd.DataFrame) -> pd.DataFrame:
@@ -41,7 +42,7 @@ def phase_summary(df: pd.DataFrame) -> pd.DataFrame:
         ("Baseline / pre-drift", "2025-08-01", "2025-09-30"),
         ("Phase I: early drift / lean-dominant adaptation", "2025-10-01", "2026-01-31"),
         ("Phase II: mixed transition", "2026-02-01", "2026-04-30"),
-        ("Phase III: fat-dominant period", "2026-05-01", "2026-06-25"),
+        ("Phase III: fat-dominant period", "2026-05-01", REPORT_END_DATE),
     ]
     rows = []
     for name, start, end in phases:

@@ -1,17 +1,15 @@
 from __future__ import annotations
 import pandas as pd
 from health_report.common.paths import DATA, PROCESSED
+from health_report.common.config import REPORT_START_DATE, REPORT_END_DATE
 from health_report.loaders.withings_loader import load_withings
 from health_report.loaders.garmin_loader import load_garmin_daily, load_activities, load_steps, load_garmin_calories_csv
 from health_report.loaders.mfp_loader import load_mfp_daily
 from health_report.loaders.events_loader import load_events, add_event_flags
 
-START_DATE = "2025-08-01"
-END_DATE = "2026-06-25"
-
-
-def build_master_dataframe(start_date: str = START_DATE, end_date: str = END_DATE) -> pd.DataFrame:
+def build_master_dataframe(start_date: str = REPORT_START_DATE, end_date: str = REPORT_END_DATE) -> pd.DataFrame:
     main = DATA / "Health_Analytics_Database_DailySummary.xlsx"
+    withings_csv = DATA / "withings" / "weight.csv"
     mfp = DATA / "MyFitnessPal_parsed_data.xlsx"
     events_path = DATA / "events.csv"
     activities_csv = DATA / "garmin" / "Activities.csv"
@@ -19,7 +17,7 @@ def build_master_dataframe(start_date: str = START_DATE, end_date: str = END_DAT
     calories_csv = DATA / "garmin" / "Calories.csv"
     dates = pd.DataFrame({"Date": pd.date_range(start_date, end_date, freq="D")})
     frames = [
-        load_withings(str(main), start_date, end_date),
+        load_withings(str(withings_csv if withings_csv.exists() else main), start_date, end_date),
         load_garmin_calories_csv(str(calories_csv), start_date, end_date) if calories_csv.exists() else load_garmin_daily(str(main), start_date, end_date),
         load_steps(str(steps_csv), start_date, end_date),
         load_activities(str(activities_csv if activities_csv.exists() else main), start_date, end_date),

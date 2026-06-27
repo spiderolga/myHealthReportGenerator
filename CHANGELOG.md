@@ -11,6 +11,21 @@
 
 # Changelog
 
+## v0.7.3
+
+### Added
+- Added centralized report configuration in `src/health_report/common/config.py`.
+
+### Changed
+- Feature #19: report end date is now `2026-06-27`.
+- Master dataframe now uses the updated Withings CSV export from `data/withings/weight.csv` when present.
+- Phase III and HRT timeline overlays now use the shared report end date instead of local hardcoded values.
+- README documents the single source of truth for report start/end dates.
+
+### Verified
+- `data/processed/master_dataframe.csv` runs from `2025-08-01` through `2026-06-27`.
+- No `2026-06-25` hardcoded value remains in source code.
+
 ## v0.7
 
 ### Changed

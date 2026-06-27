@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from health_report.common.paths import FIGURES
+from health_report.common.config import REPORT_END_DATE
 from health_report.visualization.style import DAILY_COLOR, TREND_COLOR, GRID_COLOR, ZERO_COLOR, style_time_axis, save_compact
 
 
@@ -76,7 +77,7 @@ def plot_timeline(df: pd.DataFrame):
     intervention_bands = [
         ("Ozempic (0.5 mg -> taper -> stop)", "Sep-Dec 2025", pd.Timestamp("2025-09-01"), pd.Timestamp("2025-12-08"), "#4F46E5"),
         ("HRT 0.5 mg", "from 06 Jan 2026", pd.Timestamp("2026-01-06"), pd.Timestamp("2026-04-20"), "#86EFAC"),
-        ("HRT 1.0 mg", "from 21 Apr 2026", pd.Timestamp("2026-04-21"), pd.Timestamp("2026-06-27"), "#047857"),
+        ("HRT 1.0 mg", "from 21 Apr 2026", pd.Timestamp("2026-04-21"), pd.Timestamp(REPORT_END_DATE), "#047857"),
     ]
     event_markers = [
         ("Perimenopausal signs", "from Sep 2025", pd.Timestamp("2025-09-20"), "#7C3AED", ":"),

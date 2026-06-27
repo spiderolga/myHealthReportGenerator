@@ -9,8 +9,7 @@ from reportlab.lib.units import cm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from health_report.common.paths import OUTPUT
-
-REPORT_VERSION = "v0.7.2"
+from health_report.common.config import REPORT_VERSION
 
 
 def register_fonts():
