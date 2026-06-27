@@ -207,7 +207,8 @@ def plot_timeline(df: pd.DataFrame, ev: pd.DataFrame):
         ('HRT 1.0 mg', 'from 20.04.2026', pd.Timestamp('2026-04-20'), pd.Timestamp('2026-06-25'), '#047857'),
     ]
     event_markers = [
-        ('Strength training', 'from Nov 2025', pd.Timestamp('2025-11-01'), '#7C3AED', '-'),
+        ('Perimenopausal signs', 'from Sep 2025', pd.Timestamp('2025-09-20'), '#7C3AED', '. .'),
+        ('Strength training', 'from Nov 2025', pd.Timestamp('2025-11-01'), '#7C3AED', '--'),
         ('RA flare', 'Apr 2026', pd.Timestamp('2026-03-16'), '#DC2626', '-'),
         ('Medrol course', 'Apr 2026', pd.Timestamp('2026-03-30'), '#B91C1C', '--'),
     ]
@@ -262,12 +263,13 @@ def plot_timeline(df: pd.DataFrame, ev: pd.DataFrame):
     y = ref_header(y, 'Interventions')
     for label, note, _, _, color in intervention_bands:
         y = ref_band(y, color, label, note, alpha=0.30 if 'HRT 1.0' in label else 0.25)
-    y = ref_line(y, '#7C3AED', 'Strength training started', 'Nov 2025')
+    label, note, _, color, linestyle = event_markers[0]
+    y = ref_line(y, color, label, note, linestyle=linestyle)
 
     y -= 0.016
     y = ref_header(y, 'Clinical events')
-    y = ref_line(y, '#DC2626', 'RA flare (Mar-Apr 2026)')
-    y = ref_line(y, '#B91C1C', 'Medrol course', 'Mar-Apr 2026', linestyle='--')
+    for label, note, _, color, linestyle in event_markers[1:]:
+        y = ref_line(y, color, label, note, linestyle=linestyle)
 
     y -= 0.016
     y = ref_header(y, 'Travel')
@@ -407,7 +409,7 @@ def main():
         ('Fat Mass trajectory, daily values and 7-day rolling mean.', plot_fat(df)),
         ('Lean Mass trajectory, daily values and 7-day rolling mean.', plot_lean(df)),
         ('Weight and Fat Mass change relative to September baseline.', plot_delta(df)),
-        ('Fat Mass with major events and intervention periods. Intervention bands show long-running medication/HRT intervals; vertical markers show discrete clinical/training events; translucent areas show travel periods. The Event reference maps symbols to event names.', plot_timeline(df, ev)),
+        ('Fat Mass with major events and intervention periods. Intervention bands show long-running medication intervals and travel periods; vertical markers show discrete events.', plot_timeline(df, ev)),
         ('Rolling 28-day Fat Mass growth rate, expressed as g/week.', plot_growth_rate(df)),
     ]
     pdf=build_pdf(df, metrics, monthly, phases, figs)
