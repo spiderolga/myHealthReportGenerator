@@ -2,7 +2,7 @@ from __future__ import annotations
 import pandas as pd
 from health_report.common.paths import DATA, PROCESSED
 from health_report.loaders.withings_loader import load_withings
-from health_report.loaders.garmin_loader import load_garmin_daily, load_activities
+from health_report.loaders.garmin_loader import load_garmin_daily, load_activities, load_steps, load_garmin_calories_csv
 from health_report.loaders.mfp_loader import load_mfp_daily
 from health_report.loaders.events_loader import load_events, add_event_flags
 
@@ -16,10 +16,12 @@ def build_master_dataframe(start_date: str = START_DATE, end_date: str = END_DAT
     events_path = DATA / "events.csv"
     activities_csv = DATA / "garmin" / "Activities.csv"
     steps_csv = DATA / "garmin" / "Steps.csv"
+    calories_csv = DATA / "garmin" / "Calories.csv"
     dates = pd.DataFrame({"Date": pd.date_range(start_date, end_date, freq="D")})
     frames = [
         load_withings(str(main), start_date, end_date),
-        load_garmin_daily(str(main), start_date, end_date),
+        load_garmin_calories_csv(str(calories_csv), start_date, end_date) if calories_csv.exists() else load_garmin_daily(str(main), start_date, end_date),
+        load_steps(str(steps_csv), start_date, end_date),
         load_activities(str(activities_csv if activities_csv.exists() else main), start_date, end_date),
         load_mfp_daily(str(mfp), start_date, end_date),
     ]
@@ -28,7 +30,7 @@ def build_master_dataframe(start_date: str = START_DATE, end_date: str = END_DAT
         master = master.merge(frame, on="Date", how="left")
     ev = load_events(str(events_path), start_date, end_date)
     master = add_event_flags(master, ev)
-    for c in ["Activity Count", "Activity Duration min", "Activity Calories", "Activity Steps", "Badminton Count", "Badminton Duration min", "Badminton Calories", "Strength Count", "Strength Duration min", "Strength Calories", "Walking Count", "Walking Duration min", "Walking Calories", "Steps"]:
+    for c in ["Garmin Active Calories", "Garmin Resting Calories", "Garmin Total Calories", "Activity Count", "Activity Duration min", "Activity Calories", "Activity Steps", "Badminton Count", "Badminton Duration min", "Badminton Calories", "Strength Count", "Strength Duration min", "Strength Calories", "Walking Count", "Walking Duration min", "Walking Calories", "Steps"]:
         if c in master.columns:
             master[c] = master[c].fillna(0)
     master["Energy Balance"] = master["Garmin Total Calories"] - master["Calories In"]

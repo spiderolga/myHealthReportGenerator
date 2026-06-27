@@ -1,3 +1,14 @@
+
+## v0.7.2
+
+### Added
+- Added Garmin `data/garmin/Calories.csv` as source for daily Garmin calories.
+- Added Garmin `data/garmin/Steps.csv` loader into master dataframe build.
+
+### Changed
+- `master_dataframe.csv` now includes `Steps`, `Garmin Active Calories`, `Garmin Resting Calories`, `Garmin Total Calories`, and `Energy Balance`.
+- Step Goal and Distance are intentionally excluded from the master dataframe.
+
 # Changelog
 
 ## v0.7

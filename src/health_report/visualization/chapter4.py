@@ -80,12 +80,12 @@ def plot_timeline(df: pd.DataFrame):
     ]
     event_markers = [
         ("Perimenopausal signs", "from Sep 2025", pd.Timestamp("2025-09-20"), "#7C3AED", ":"),
-        ("Strength training", "from Nov 2025", pd.Timestamp("2025-11-01"), "#7C3AED", "--"),
+        ("Strength training", "from Nov 2025", pd.Timestamp("2025-11-16"), "#7C3AED", "--"),
         ("RA flare", "Mar-Apr 2026", pd.Timestamp("2026-03-16"), "#DC2626", "-"),
         ("Medrol course", "30 Mar-03 Apr 2026", pd.Timestamp("2026-03-30"), "#B91C1C", "--"),
     ]
     travel_periods = [
-        ("Italy trip 3", "", pd.Timestamp("2025-09-17"), pd.Timestamp("2026-09-27"), "#F59E0B"),
+        ("Italy trip 3", "", pd.Timestamp("2025-09-17"), pd.Timestamp("2025-09-27"), "#F59E0B"),
         ("Winter Trip", "", pd.Timestamp("2026-02-06"), pd.Timestamp("2026-02-23"), "#F59E0B"),
         ("Italy Trip 4", "", pd.Timestamp("2026-04-19"), pd.Timestamp("2026-05-02"), "#F59E0B"),
         ("Italy Trip 5", "", pd.Timestamp("2026-05-12"), pd.Timestamp("2026-05-30"), "#F59E0B"),

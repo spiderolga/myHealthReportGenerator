@@ -97,3 +97,13 @@ Clean generated files:
 ```powershell
 Remove-Item -Recurse -Force output, figures, data\processed
 ```
+
+### Garmin inputs
+
+The master dataframe uses these Garmin files when present:
+
+- `data/garmin/Steps.csv` -> `Steps` from the `Actual` column only. `Goal` is ignored.
+- `data/garmin/Calories.csv` -> `Garmin Active Calories`, `Garmin Resting Calories`, `Garmin Total Calories`.
+- `data/garmin/Activities.csv` -> aggregated activity counts, durations, calories, and sport-specific metrics.
+
+`Distance` and `Step Goal` are intentionally not included in `master_dataframe.csv`.

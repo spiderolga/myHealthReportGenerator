@@ -3,6 +3,65 @@ from pathlib import Path
 import pandas as pd
 
 
+
+
+def _read_garmin_simple_csv(path: str) -> pd.DataFrame:
+    """Read simple Garmin daily CSV exports where the first unnamed column is the date."""
+    df = pd.read_csv(path, encoding="utf-8-sig")
+    if "Date" not in df.columns:
+        first = df.columns[0]
+        df = df.rename(columns={first: "Date"})
+    df["Date"] = pd.to_datetime(df["Date"], errors="coerce").dt.normalize()
+    return df.dropna(subset=["Date"]).copy()
+
+
+def load_steps(path: str, start_date: str, end_date: str) -> pd.DataFrame:
+    """Load Garmin Steps.csv.
+
+    The Garmin file contains Actual and Goal. Only Actual is included in the
+    master dataframe as Steps; Step Goal is intentionally ignored.
+    """
+    p = Path(path)
+    if not p.exists():
+        return pd.DataFrame(columns=["Date", "Steps"])
+    df = _read_garmin_simple_csv(str(p))
+    if "Actual" in df.columns:
+        df = df.rename(columns={"Actual": "Steps"})
+    elif "Steps" not in df.columns:
+        return pd.DataFrame(columns=["Date", "Steps"])
+    df["Steps"] = pd.to_numeric(df["Steps"], errors="coerce")
+    start = pd.Timestamp(start_date)
+    end = pd.Timestamp(end_date)
+    return df.loc[(df["Date"] >= start) & (df["Date"] <= end), ["Date", "Steps"]].copy()
+
+
+def load_garmin_calories_csv(path: str, start_date: str, end_date: str) -> pd.DataFrame:
+    """Load Garmin Calories.csv export.
+
+    Included fields: active, resting, and total calories. Distance and step goal
+    are not part of this export and are intentionally not used.
+    """
+    p = Path(path)
+    if not p.exists():
+        return pd.DataFrame(columns=["Date", "Garmin Active Calories", "Garmin Resting Calories", "Garmin Total Calories"])
+    df = _read_garmin_simple_csv(str(p))
+    df = df.rename(columns={
+        "Active Calories": "Garmin Active Calories",
+        "Resting Calories": "Garmin Resting Calories",
+        "Total": "Garmin Total Calories",
+        "Total Calories": "Garmin Total Calories",
+    })
+    wanted = ["Garmin Active Calories", "Garmin Resting Calories", "Garmin Total Calories"]
+    for c in wanted:
+        if c in df.columns:
+            df[c] = pd.to_numeric(df[c], errors="coerce")
+        else:
+            df[c] = pd.NA
+    start = pd.Timestamp(start_date)
+    end = pd.Timestamp(end_date)
+    return df.loc[(df["Date"] >= start) & (df["Date"] <= end), ["Date"] + wanted].copy()
+
+
 def load_garmin_daily(path: str, start_date: str, end_date: str) -> pd.DataFrame:
     df = pd.read_excel(path, sheet_name="Garmin Daily Calories")
     df["Date"] = pd.to_datetime(df["Date"]).dt.normalize()
