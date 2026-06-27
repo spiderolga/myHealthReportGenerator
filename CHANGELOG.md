@@ -1,3 +1,23 @@
+# Changelog
+
+## v0.8.0
+
+### Added
+- Feature #21: Food diary data completeness table and Figure 5.1 coverage chart.
+- Feature #22: automatic nutrition phase detection based on monthly logging coverage.
+- Added Chapter 5 initial nutrition phase summary tables.
+- Added `src/health_report/analysis/nutrition.py`.
+- Added `src/health_report/visualization/chapter5.py`.
+- Added nutrition output CSV files: `nutrition_coverage.csv`, `nutrition_phases.csv`, and `nutrition_phase_summary.csv`.
+
+### Changed
+- Feature #20: Figure 4.5 right-side unused margin reduced; Event reference gets more usable space.
+- Report version updated to `v0.8.0`.
+
+### Verified
+- PDF renders successfully with 8 pages.
+- Chapter 5 tables no longer overflow the page.
+
 
 ## v0.7.2
 

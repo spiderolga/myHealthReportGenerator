@@ -4,7 +4,7 @@ Reproducible Python report generator for the project:
 
 **Body Composition Regulation After Successful Weight Loss - N-of-1 Case Study**
 
-Current scope: Draft v0.7.3 - centralized report date range + Chapter 4 Body Composition Analysis.
+Current scope: Draft v0.8.0 - Chapter 4 Body Composition Analysis + Chapter 5 nutrition data completeness and phase detection.
 
 ## Version 2 architecture
 
@@ -17,6 +17,8 @@ data/
   events.csv
   garmin/
     Activities.csv
+    Steps.csv
+    Calories.csv
   processed/
     master_dataframe.csv
 
@@ -61,6 +63,8 @@ Place these files in `data/`:
 - `MyFitnessPal_parsed_data.xlsx`
 - `events.csv`
 - `garmin/Activities.csv` (optional but preferred for Garmin activity sessions)
+- `garmin/Steps.csv` (optional but preferred for daily step counts)
+- `garmin/Calories.csv` (optional but preferred for daily Garmin calories)
 
 ## Run
 
@@ -85,10 +89,13 @@ python src/generate_report.py
 ## Outputs
 
 - `data/processed/master_dataframe.csv`
-- `output/Personal_Weight_Regulation_Model_v0.7.3.pdf`
+- `output/Personal_Weight_Regulation_Model_v0.8.0.pdf`
 - `output/body_composition_metrics.csv`
 - `output/monthly_body_composition.csv`
 - `output/phase_summary.csv`
+- `output/nutrition_coverage.csv`
+- `output/nutrition_phases.csv`
+- `output/nutrition_phase_summary.csv`
 - figures in `figures/`
 
 If an optional Parquet engine such as `pyarrow` is installed, `data/processed/master_dataframe.parquet` is also written. CSV remains canonical.

@@ -67,7 +67,8 @@ def plot_delta(df: pd.DataFrame):
 
 def plot_timeline(df: pd.DataFrame):
     fig = plt.figure(figsize=(13.2, 5.55))
-    gs = gridspec.GridSpec(1, 2, width_ratios=[5.55, 1.20], wspace=0.06)
+    # Keep the reference column narrow, but remove unused right margin so text gets the full available width.
+    gs = gridspec.GridSpec(1, 2, width_ratios=[5.45, 1.23], wspace=0.035)
     ax = fig.add_subplot(gs[0, 0])
     ax_ref = fig.add_subplot(gs[0, 1])
     ax_ref.axis("off")
@@ -112,15 +113,15 @@ def plot_timeline(df: pd.DataFrame):
         return label if not note else f"{label}\n{note}"
 
     def ref_band(y, color, label, note="", alpha=0.25):
-        ax_ref.add_patch(plt.Rectangle((0.00, y - 0.030), 0.060, 0.028, transform=ax_ref.transAxes, facecolor=color, alpha=alpha, edgecolor=color, linewidth=0.7))
-        wrapped = "\n".join(textwrap.wrap(label_text(label, note), width=24, break_long_words=False))
-        ax_ref.text(0.075, y - 0.016, wrapped, transform=ax_ref.transAxes, fontsize=7.25, va="center", color="#111827", linespacing=1.13)
+        ax_ref.add_patch(plt.Rectangle((0.00, y - 0.030), 0.065, 0.028, transform=ax_ref.transAxes, facecolor=color, alpha=alpha, edgecolor=color, linewidth=0.7))
+        wrapped = "\n".join(textwrap.wrap(label_text(label, note), width=29, break_long_words=False))
+        ax_ref.text(0.082, y - 0.016, wrapped, transform=ax_ref.transAxes, fontsize=7.25, va="center", color="#111827", linespacing=1.13)
         return y - (0.043 + 0.022 * max(0, wrapped.count("\n")))
 
     def ref_line(y, color, label, note="", linestyle="-"):
-        ax_ref.plot([0.00, 0.060], [y - 0.016, y - 0.016], transform=ax_ref.transAxes, color=color, linewidth=1.75, linestyle=linestyle, solid_capstyle="butt")
-        wrapped = "\n".join(textwrap.wrap(label_text(label, note), width=24, break_long_words=False))
-        ax_ref.text(0.075, y - 0.016, wrapped, transform=ax_ref.transAxes, fontsize=7.25, va="center", color="#111827", linespacing=1.13)
+        ax_ref.plot([0.00, 0.065], [y - 0.016, y - 0.016], transform=ax_ref.transAxes, color=color, linewidth=1.75, linestyle=linestyle, solid_capstyle="butt")
+        wrapped = "\n".join(textwrap.wrap(label_text(label, note), width=29, break_long_words=False))
+        ax_ref.text(0.082, y - 0.016, wrapped, transform=ax_ref.transAxes, fontsize=7.25, va="center", color="#111827", linespacing=1.13)
         return y - (0.043 + 0.022 * max(0, wrapped.count("\n")))
 
     y = 0.92
@@ -141,7 +142,7 @@ def plot_timeline(df: pd.DataFrame):
         y = ref_band(y, color, label, alpha=0.30)
 
     out = FIGURES / "fig_4_5_fat_timeline_events.png"
-    fig.subplots_adjust(left=0.065, right=0.99, top=0.91, bottom=0.17)
+    fig.subplots_adjust(left=0.060, right=0.998, top=0.91, bottom=0.17)
     fig.savefig(out, dpi=250)
     plt.close(fig)
     return out

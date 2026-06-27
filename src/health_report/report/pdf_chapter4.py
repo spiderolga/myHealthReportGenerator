@@ -59,7 +59,7 @@ def table_from_df(df, widths=None):
     return t
 
 
-def build_pdf(df, metrics, monthly, phases, figs):
+def build_pdf(df, metrics, monthly, phases, figs, nutrition_coverage=None, nutrition_phases=None, nutrition_summary=None, nutrition_figs=None):
     styles = get_styles()
     pdf = OUTPUT / f"Personal_Weight_Regulation_Model_{REPORT_VERSION}.pdf"
     doc = SimpleDocTemplate(str(pdf), pagesize=A4, rightMargin=1.4 * cm, leftMargin=1.4 * cm, topMargin=1.2 * cm, bottomMargin=1.2 * cm)
@@ -127,5 +127,46 @@ def build_pdf(df, metrics, monthly, phases, figs):
     for col in evd.columns:
         evd[col] = evd[col].apply(lambda x: Paragraph(str(x), styles["Small"]))
     els.append(table_from_df(evd, widths=[5.0 * cm, 6.6 * cm, 5.2 * cm]))
+
+
+    # Chapter 5 - Nutrition data completeness and phases
+    if nutrition_coverage is not None:
+        els.append(PageBreak())
+        els.append(Paragraph("5. Nutrition And Energy Intake Analysis", styles["Heading1"]))
+        els.append(Paragraph("5.0 Food Diary Data Completeness", styles["Heading2"]))
+        cov = nutrition_coverage.copy()
+        els.append(table_from_df(cov, widths=[3.2 * cm, 2.2 * cm, 2.8 * cm, 2.8 * cm]))
+        els.append(Spacer(1, 0.25 * cm))
+        if nutrition_figs:
+            for j, (caption, path) in enumerate(nutrition_figs, start=1):
+                els.append(Image(str(path), width=17 * cm, height=7.7 * cm))
+                els.append(Paragraph(f"Figure 5.{j}. {caption}", styles["Caption"]))
+                els.append(Spacer(1, 0.25 * cm))
+        if nutrition_phases is not None:
+            els.append(Paragraph("5.1 Nutrition Phase Detection", styles["Heading2"]))
+            phase_df = nutrition_phases.copy()
+            els.append(table_from_df(phase_df, widths=[4.2 * cm, 2.6 * cm, 2.6 * cm, 1.8 * cm, 2.6 * cm, 2.2 * cm]))
+            els.append(Spacer(1, 0.25 * cm))
+        if nutrition_summary is not None:
+            els.append(PageBreak())
+            els.append(Paragraph("5.2 Nutrition Phase Summary", styles["Heading2"]))
+            nsum = nutrition_summary.copy()
+            macro_cols = ["Phase", "Period", "Logged days", "Coverage %", "kcal/day", "Protein g", "Fat g", "Carbs g", "Fiber g"]
+            macro_cols = [c for c in macro_cols if c in nsum.columns]
+            macro = nsum[macro_cols].copy()
+            macro = macro.rename(columns={"Logged days": "Logged", "Coverage %": "Cov. %"})
+            for col in macro.columns:
+                macro[col] = macro[col].apply(lambda x: Paragraph(str(x), styles["Small"]))
+            els.append(table_from_df(macro, widths=[2.8 * cm, 3.4 * cm, 1.25 * cm, 1.25 * cm, 1.45 * cm, 1.5 * cm, 1.3 * cm, 1.5 * cm, 1.4 * cm]))
+            els.append(Spacer(1, 0.25 * cm))
+            density_cols = ["Phase", "Protein g/1000 kcal", "PEI g/100 kcal"]
+            density_cols = [c for c in density_cols if c in nsum.columns]
+            if density_cols:
+                els.append(Paragraph("Protein density metrics", styles["Heading3"]))
+                density = nsum[density_cols].copy()
+                for col in density.columns:
+                    density[col] = density[col].apply(lambda x: Paragraph(str(x), styles["Small"]))
+                els.append(table_from_df(density, widths=[4.2 * cm, 4.2 * cm, 4.2 * cm]))
+
     doc.build(els)
     return pdf
