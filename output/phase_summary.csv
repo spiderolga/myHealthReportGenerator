@@ -1,4 +1,5 @@
 Phase,Start,End,Days,Weight start,Weight end,Weight Δ kg,Fat start,Fat end,Fat Δ kg,Lean start,Lean end,Lean Δ kg
-Phase I: early drift / lean-dominant adaptation,2025-09-28,2026-01-31,126,65.58,66.66,1.08,17.55,17.65,0.1,48.03,49.01,0.98
+Baseline / pre-drift,2025-08-04,2025-09-28,61,66.39,65.58,-0.81,17.9,17.55,-0.35,48.49,48.03,-0.46
+Phase I: early drift / lean-dominant adaptation,2025-10-02,2026-01-31,123,66.34,66.66,0.32,17.85,17.65,-0.2,48.49,49.01,0.52
 Phase II: mixed transition,2026-02-02,2026-04-17,89,67.37,68.27,0.9,17.84,18.75,0.91,49.53,49.52,-0.01
-Phase III: fat-dominant period,2026-05-04,2026-06-25,56,67.46,69.63,2.17,17.95,19.73,1.78,49.51,49.9,0.39
+Phase III: fat-dominant period,2026-05-04,2026-06-27,58,67.46,68.59,1.13,17.95,19.4,1.45,49.51,49.19,-0.32

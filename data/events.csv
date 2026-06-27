@@ -1,11 +1,12 @@
 category,start,end,label
-Medication,2025-08-01,2025-12-31,Ozempic taper / stop
-Nutrition,2025-10-01,2026-06-25,Protein target ~100 g/day
-Training,2025-11-01,2026-06-25,Strength training
-HRT,2026-01-01,2026-03-31,HRT 0.5 mg estrogen
-HRT,2026-04-01,2026-06-25,HRT 1 mg estrogen
+Medication,2025-08-01,2025-12-08,Ozempic taper / stop
+Nutrition,2025-10-20,2026-06-27,Protein target ~100 g/day
+Training,2025-11-16,2026-06-27,Strength training
+HRT,2026-01-06,2026-04-20,HRT 0.5 mg estrogen
+HRT,2026-04-21,2026-06-27,HRT 1 mg estrogen
 RA,2026-03-16,2026-03-30,RA flare
 Medication,2026-03-30,2026-04-03,Medrol 20 mg x 5 days
+Travel,2025-09-17,2025-09-27,Italy trip 3
 Travel,2026-02-06,2026-02-23,Winter trip
 Travel,2026-04-19,2026-05-02,Italy trip 4
 Travel,2026-05-12,2026-05-30,Italy trip 5
