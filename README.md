@@ -16,12 +16,22 @@ Place these files in `data/`:
 
 ## Run
 
-```bash
-python src/generate_report.py
+Create and select a virtual environment:
 
-# or, from IntelliJ IDEA / Gradle:
-./gradlew generateReport   # if Gradle wrapper is added locally
-gradle generateReport      # if Gradle is installed
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -e .
+```
+
+Generate the report:
+
+```powershell
+generate-health-report
+
+# or directly:
+python src/generate_report.py
 ```
 
 ## Outputs
@@ -39,21 +49,20 @@ gradle generateReport      # if Gradle is installed
 - Garmin calories are not interpreted in Sprint 1.
 
 
-## Gradle / IntelliJ IDEA
+## IntelliJ IDEA
 
-This project includes `settings.gradle` and `build.gradle` so it can be opened in IntelliJ IDEA as a Gradle project.
+Open this folder as a Python project.
 
-Available tasks:
+Recommended setup:
 
-- `installPythonDeps` - installs Python dependencies from `requirements.txt`.
-- `generateReport` - generates the report PDF, figures, and CSV outputs.
-- `cleanReport` - deletes generated `figures/` and `output/`.
-- `build` - depends on `generateReport`.
+- Install or enable the Python plugin.
+- Configure Python SDK/interpreter as `.venv`.
+- Run `src/generate_report.py` or the `generate-health-report` script.
 
-If your Python executable is not named `python`, run:
+Clean generated files:
 
-```bash
-gradle generateReport -PpythonExecutable=python3
+```powershell
+Remove-Item -Recurse -Force output, figures
 ```
 
 ## Changelog
@@ -65,4 +74,4 @@ gradle generateReport -PpythonExecutable=python3
 - Restored full event/intervention names.
 - Split the Event reference into Interventions, Clinical events, and Travel.
 - Added distinct visual grammar: intervention bands, vertical event markers, and translucent travel areas.
-- Added Gradle build files for IntelliJ IDEA workflow.
+- Switched project setup to Python packaging via `pyproject.toml`.
