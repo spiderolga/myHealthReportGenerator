@@ -25,6 +25,11 @@ INPUT_MFP = DATA / 'MyFitnessPal_parsed_data.xlsx'
 EVENTS = DATA / 'events.csv'
 PERIOD_START = pd.Timestamp('2025-09-01')
 PERIOD_END = pd.Timestamp('2026-06-25')
+REPORT_VERSION = 'v0.6.1'
+DAILY_COLOR = '#202020'
+TREND_COLOR = '#1D4ED8'
+ALT_COLOR = '#0F766E'
+GRID_COLOR = '#D1D5DB'
 
 # Fonts
 font_path = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
@@ -66,7 +71,7 @@ def load_events() -> pd.DataFrame:
 
 def style_time_axis(ax):
     """Shared compact styling for longitudinal plots."""
-    ax.grid(True, alpha=.22)
+    ax.grid(True, color=GRID_COLOR, alpha=.28, linewidth=0.55)
     ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
     ax.tick_params(axis='x', rotation=35, labelsize=8.8)
@@ -136,8 +141,8 @@ def phase_summary(df: pd.DataFrame) -> pd.DataFrame:
 
 def plot_weight(df: pd.DataFrame):
     fig, ax = plt.subplots(figsize=(11.2,4.8))
-    ax.plot(df['Date'], df['Weight kg'], alpha=.25, linewidth=.8, label='Daily')
-    ax.plot(df['Date'], df['Weight_7d_calc'], linewidth=2.2, label='7-day mean')
+    ax.plot(df['Date'], df['Weight kg'], color=DAILY_COLOR, alpha=.62, linewidth=1.25, label='Daily')
+    ax.plot(df['Date'], df['Weight_7d_calc'], color=TREND_COLOR, linewidth=2.65, label='7-day mean')
     ax.set_title('Weight trajectory', pad=8, fontsize=12)
     ax.set_ylabel('kg')
     style_time_axis(ax)
@@ -148,8 +153,8 @@ def plot_weight(df: pd.DataFrame):
 
 def plot_fat(df: pd.DataFrame):
     fig, ax = plt.subplots(figsize=(11.2,4.8))
-    ax.plot(df['Date'], df['Fat mass kg'], alpha=.25, linewidth=.8, label='Daily')
-    ax.plot(df['Date'], df['Fat_7d'], linewidth=2.2, label='7-day mean')
+    ax.plot(df['Date'], df['Fat mass kg'], color=DAILY_COLOR, alpha=.62, linewidth=1.25, label='Daily')
+    ax.plot(df['Date'], df['Fat_7d'], color=TREND_COLOR, linewidth=2.65, label='7-day mean')
     ax.set_title('Fat Mass trajectory', pad=8, fontsize=12)
     ax.set_ylabel('kg')
     style_time_axis(ax); ax.legend(frameon=False, fontsize=8.8)
@@ -159,8 +164,8 @@ def plot_fat(df: pd.DataFrame):
 
 def plot_lean(df: pd.DataFrame):
     fig, ax = plt.subplots(figsize=(11.2,4.8))
-    ax.plot(df['Date'], df['Lean mass kg'], alpha=.25, linewidth=.8, label='Daily')
-    ax.plot(df['Date'], df['Lean_7d'], linewidth=2.2, label='7-day mean')
+    ax.plot(df['Date'], df['Lean mass kg'], color=DAILY_COLOR, alpha=.62, linewidth=1.25, label='Daily')
+    ax.plot(df['Date'], df['Lean_7d'], color=TREND_COLOR, linewidth=2.65, label='7-day mean')
     ax.set_title('Lean Mass trajectory', pad=8, fontsize=12)
     ax.set_ylabel('kg')
     style_time_axis(ax); ax.legend(frameon=False, fontsize=8.8)
@@ -170,9 +175,9 @@ def plot_lean(df: pd.DataFrame):
 
 def plot_delta(df: pd.DataFrame):
     fig, ax = plt.subplots(figsize=(11.2,4.8))
-    ax.plot(df['Date'], df['Delta_Weight_from_start'], linewidth=2, label='Weight Δ from Sep baseline')
-    ax.plot(df['Date'], df['Delta_Fat_from_start'], linewidth=2, label='Fat Mass Δ from Sep baseline')
-    ax.axhline(0, color='black', linewidth=.8, alpha=.5)
+    ax.plot(df['Date'], df['Delta_Weight_from_start'], color=DAILY_COLOR, linewidth=2.35, label='Weight Δ from Sep baseline')
+    ax.plot(df['Date'], df['Delta_Fat_from_start'], color=TREND_COLOR, linewidth=2.35, label='Fat Mass Δ from Sep baseline')
+    ax.axhline(0, color='#4B5563', linewidth=1.15, alpha=.9)
     ax.set_title('Weight and Fat Mass change from baseline', pad=8, fontsize=12)
     ax.set_ylabel('kg change')
     style_time_axis(ax); ax.legend(frameon=False, fontsize=8.8)
@@ -193,18 +198,18 @@ def plot_timeline(df: pd.DataFrame, ev: pd.DataFrame):
     ax_ref.axis('off')
 
     # Main Fat Mass line.
-    ax.plot(df['Date'], df['Fat_7d'], linewidth=2.45, color='#111827', zorder=6)
+    ax.plot(df['Date'], df['Fat_7d'], linewidth=2.75, color=DAILY_COLOR, zorder=6)
 
     # Curated timeline. Dates mirrored from data/events.csv and discussion notes.
     intervention_bands = [
         ('Ozempic (0.5 mg -> taper -> stop)', 'Sep-Dec 2025', pd.Timestamp('2025-09-01'), pd.Timestamp('2025-12-31'), '#4F46E5'),
-        ('HRT 0.5 mg', 'from 06.01.2026', pd.Timestamp('2026-01-06'), pd.Timestamp('2026-03-31'), '#86EFAC'),
+        ('HRT 0.5 mg', 'from 06.01.2026', pd.Timestamp('2026-01-06'), pd.Timestamp('2026-04-20'), '#86EFAC'),
         ('HRT 1.0 mg', 'from 20.04.2026', pd.Timestamp('2026-04-20'), pd.Timestamp('2026-06-25'), '#047857'),
     ]
     event_markers = [
-        ('Strength training started', 'Nov 2025', pd.Timestamp('2025-11-01'), '#7C3AED', '-'),
-        ('RA flare (Mar-Apr 2026)', 'Mar-Apr 2026', pd.Timestamp('2026-03-16'), '#DC2626', '-'),
-        ('Medrol course', 'Mar-Apr 2026', pd.Timestamp('2026-03-30'), '#B91C1C', '--'),
+        ('Strength training', 'from Nov 2025', pd.Timestamp('2025-11-01'), '#7C3AED', '-'),
+        ('RA flare', 'Apr 2026', pd.Timestamp('2026-03-16'), '#DC2626', '-'),
+        ('Medrol course', 'Apr 2026', pd.Timestamp('2026-03-30'), '#B91C1C', '--'),
     ]
     travel_periods = [
         ('Winter Trip', '', pd.Timestamp('2026-02-06'), pd.Timestamp('2026-02-23'), '#F59E0B'),
@@ -278,8 +283,8 @@ def plot_timeline(df: pd.DataFrame, ev: pd.DataFrame):
 
 def plot_growth_rate(df: pd.DataFrame):
     fig, ax = plt.subplots(figsize=(11.2,4.8))
-    ax.plot(df['Date'], df['Fat_g_per_week_28d'], linewidth=2)
-    ax.axhline(0, color='black', linewidth=.8, alpha=.5)
+    ax.plot(df['Date'], df['Fat_g_per_week_28d'], color=DAILY_COLOR, linewidth=2.35)
+    ax.axhline(0, color='#4B5563', linewidth=1.15, alpha=.9)
     ax.set_title('Fat Mass growth rate estimated over rolling 28-day windows', pad=8, fontsize=12)
     ax.set_ylabel('g/week')
     style_time_axis(ax)
@@ -321,11 +326,11 @@ def build_pdf(df, metrics, monthly, phases, figs):
     for s in ['Heading1','Heading2','Heading3']:
         styles[s].fontName=bold_font
     styles.add(ParagraphStyle(name='Small', fontName=normal_font, fontSize=8, leading=10))
-    styles.add(ParagraphStyle(name='Caption', fontName=normal_font, fontSize=8, leading=10, textColor=colors.HexColor('#4B5563')))
-    pdf=OUT/'Personal_Weight_Regulation_Model_v0.6.pdf'
+    styles.add(ParagraphStyle(name='Caption', fontName=normal_font, fontSize=8, leading=10, leftIndent=1.2*cm, firstLineIndent=0, textColor=colors.HexColor('#4B5563')))
+    pdf=OUT/f'Personal_Weight_Regulation_Model_{REPORT_VERSION}.pdf'
     doc=SimpleDocTemplate(str(pdf), pagesize=A4, rightMargin=1.4*cm, leftMargin=1.4*cm, topMargin=1.2*cm, bottomMargin=1.2*cm)
     els=[]
-    els.append(Paragraph('Draft v0.6 - Chapter 4: Body Composition Analysis', styles['Heading1']))
+    els.append(Paragraph(f'Draft {REPORT_VERSION} - Chapter 4: Body Composition Analysis', styles['Heading1']))
     els.append(Paragraph('Personal Weight Regulation Model / N-of-1 Longitudinal Case Study', styles['Small']))
     els.append(Spacer(1,0.35*cm))
     els.append(Paragraph('4.1 Dataset', styles['Heading2']))

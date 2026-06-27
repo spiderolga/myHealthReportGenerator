@@ -16,3 +16,10 @@
 ### Changed
 - Redesigned Figure 4.5 with Event reference.
 - Added Gradle build task for report generation.
+
+## v0.6.1
+
+### Changed
+- Issue #18: made daily/main lines darker and more visible across Chapter 4 plots.
+- Issue #19: aligned figure captions with the plot area rather than the page margin.
+- Strengthened zero reference line in growth-rate and delta plots.
