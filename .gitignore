@@ -1,0 +1,18 @@
+myHealthGen.iml
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# IntelliJ
+.idea/
+
+# Build
+output/
+figures/
+*.pdf
+.gradle/
+
+# OS
+.DS_Store
+Thumbs.db

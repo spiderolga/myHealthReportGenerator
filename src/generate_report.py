@@ -170,83 +170,107 @@ def plot_delta(df: pd.DataFrame):
 
 
 def plot_timeline(df: pd.DataFrame, ev: pd.DataFrame):
-    """Fat mass timeline with event spans and a readable side legend.
+    """Fat mass timeline with event periods and a compact Event reference.
 
-    The legend is a compact table placed outside the plotting area. It is kept
-    intentionally short because full event labels are documented in events.csv.
+    Visual grammar:
+    - intervention bands: long medication/HRT periods;
+    - vertical markers: discrete clinical/training events;
+    - translucent areas: travel periods.
     """
     import matplotlib.gridspec as gridspec
+    import textwrap
 
-    fig = plt.figure(figsize=(12.2, 5.8))
-    gs = gridspec.GridSpec(1, 2, width_ratios=[4.9, 1.55], wspace=0.12)
+    fig = plt.figure(figsize=(12.6, 5.9))
+    gs = gridspec.GridSpec(1, 2, width_ratios=[5.05, 1.35], wspace=0.08)
     ax = fig.add_subplot(gs[0, 0])
-    ax_leg = fig.add_subplot(gs[0, 1])
-    ax_leg.axis('off')
+    ax_ref = fig.add_subplot(gs[0, 1])
+    ax_ref.axis('off')
 
-    ax.plot(df['Date'], df['Fat_7d'], linewidth=2.5, color='#111827', label='Fat Mass 7-day mean', zorder=5)
+    # Main Fat Mass line.
+    ax.plot(df['Date'], df['Fat_7d'], linewidth=2.5, color='#111827', zorder=6)
 
-    category_colors = {
-        'Medication': '#4F46E5',
-        'Nutrition': '#059669',
-        'Training': '#7C3AED',
-        'HRT': '#10B981',
-        'RA': '#DC2626',
-        'Travel': '#F59E0B',
-    }
-    short_labels = {
-        'Medication': 'Medication',
-        'Nutrition': 'Nutrition',
-        'Training': 'Training',
-        'HRT': 'HRT',
-        'RA': 'RA / Medrol',
-        'Travel': 'Travel',
-    }
+    # Figure 4.5 intentionally shows a curated timeline, not every event in events.csv.
+    # Dates are mirrored from data/events.csv and discussion notes.
+    intervention_bands = [
+        ('Ozempic (0.5 mg -> taper -> stop)', pd.Timestamp('2025-09-01'), pd.Timestamp('2025-12-31'), '#4F46E5'),
+        ('HRT 0.5 mg', pd.Timestamp('2026-01-01'), pd.Timestamp('2026-03-31'), '#10B981'),
+        ('HRT 1.0 mg', pd.Timestamp('2026-04-01'), pd.Timestamp('2026-06-25'), '#059669'),
+    ]
+    event_markers = [
+        ('Strength training started', pd.Timestamp('2025-11-01'), '#7C3AED', '-'),
+        ('RA flare (Mar-Apr 2026)', pd.Timestamp('2026-03-16'), '#DC2626', '-'),
+        ('Medrol course', pd.Timestamp('2026-03-30'), '#B91C1C', '--'),
+    ]
+    travel_periods = [
+        ('Winter Trip', pd.Timestamp('2026-02-06'), pd.Timestamp('2026-02-23'), '#F59E0B'),
+        ('Italy Trip 4', pd.Timestamp('2026-04-19'), pd.Timestamp('2026-05-02'), '#F59E0B'),
+        ('Italy Trip 5', pd.Timestamp('2026-05-12'), pd.Timestamp('2026-05-30'), '#F59E0B'),
+    ]
 
-    used_categories = []
-    for _, r in ev.iterrows():
-        cat = str(r['category'])
-        color = category_colors.get(cat, '#6B7280')
-        ax.axvspan(r['start'], r['end'], color=color, alpha=0.16, linewidth=0, zorder=1)
-        if cat not in used_categories:
-            used_categories.append(cat)
+    # Draw interventions first, then travel, then vertical event markers.
+    for label, start, end, color in intervention_bands:
+        ax.axvspan(start, end, color=color, alpha=0.12, linewidth=0, zorder=1)
+    for label, start, end, color in travel_periods:
+        ax.axvspan(start, end, color=color, alpha=0.18, linewidth=0, zorder=2)
+    for label, date, color, linestyle in event_markers:
+        ax.axvline(date, color=color, linewidth=1.6, linestyle=linestyle, alpha=0.85, zorder=4)
 
-    ax.set_title('Fat Mass trajectory with event timeline')
+    ax.set_title('Fat Mass trajectory with intervention and event timeline', pad=10)
     ax.set_ylabel('Fat Mass, kg')
-    ax.grid(True, alpha=.25, zorder=0)
+    ax.grid(True, alpha=.22, zorder=0)
     ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
     ax.tick_params(axis='x', rotation=35, labelsize=8.5)
     ax.tick_params(axis='y', labelsize=8.5)
 
-    # Side legend table with readable spacing.
-    ax_leg.text(0.02, 0.98, 'Event legend', fontsize=11, fontweight='bold', va='top', color='#111827')
-    y = 0.88
-    row_gap = 0.115
-    for cat in ['Medication', 'Nutrition', 'Training', 'HRT', 'RA', 'Travel']:
-        if cat not in used_categories:
-            continue
-        ax_leg.add_patch(plt.Rectangle((0.02, y-0.025), 0.10, 0.052,
-                                       transform=ax_leg.transAxes,
-                                       facecolor=category_colors[cat],
-                                       alpha=0.35,
-                                       edgecolor=category_colors[cat],
-                                       linewidth=0.8))
-        ax_leg.text(0.17, y, short_labels.get(cat, cat),
-                    transform=ax_leg.transAxes,
-                    fontsize=9.2,
-                    va='center',
-                    color='#111827')
-        y -= row_gap
+    # Compact right-side reference table.
+    ax_ref.text(0.02, 0.985, 'Event reference', transform=ax_ref.transAxes, fontsize=10.5, fontweight='bold', va='top', color='#111827')
 
-    ax_leg.text(0.02, 0.11,
-                'Bands indicate\nperiods, not exact\npoint events.',
-                fontsize=8.1,
-                color='#4B5563',
-                va='bottom',
-                linespacing=1.35)
+    def ref_header(y, text):
+        ax_ref.text(0.02, y, text, transform=ax_ref.transAxes, fontsize=8.7, fontweight='bold', va='top', color='#374151')
+        return y - 0.050
+
+    def ref_band(y, color, text, alpha=0.22):
+        ax_ref.add_patch(plt.Rectangle((0.02, y-0.030), 0.095, 0.030,
+                                       transform=ax_ref.transAxes,
+                                       facecolor=color, alpha=alpha,
+                                       edgecolor=color, linewidth=0.8))
+        wrapped = '\n'.join(textwrap.wrap(text, width=23))
+        ax_ref.text(0.14, y-0.015, wrapped, transform=ax_ref.transAxes,
+                    fontsize=7.7, va='center', color='#111827', linespacing=1.20)
+        return y - (0.047 + 0.026 * max(0, wrapped.count('\n')))
+
+    def ref_line(y, color, text, linestyle='-'):
+        ax_ref.plot([0.02, 0.115], [y-0.016, y-0.016], transform=ax_ref.transAxes,
+                    color=color, linewidth=1.8, linestyle=linestyle, solid_capstyle='butt')
+        wrapped = '\n'.join(textwrap.wrap(text, width=23))
+        ax_ref.text(0.14, y-0.016, wrapped, transform=ax_ref.transAxes,
+                    fontsize=7.7, va='center', color='#111827', linespacing=1.20)
+        return y - (0.047 + 0.026 * max(0, wrapped.count('\n')))
+
+    y = 0.92
+    y = ref_header(y, 'Interventions')
+    for text, _, _, color in intervention_bands:
+        y = ref_band(y, color, text, alpha=0.25)
+    y = ref_line(y, '#7C3AED', 'Strength training started')
+
+    y -= 0.018
+    y = ref_header(y, 'Clinical events')
+    y = ref_line(y, '#DC2626', 'RA flare (Mar-Apr 2026)')
+    y = ref_line(y, '#B91C1C', 'Medrol course', linestyle='--')
+
+    y -= 0.018
+    y = ref_header(y, 'Travel')
+    # Travel labels intentionally stay short, per editorial review.
+    for text, _, _, color in travel_periods:
+        y = ref_band(y, color, text, alpha=0.28)
+
+    ax_ref.text(0.02, 0.045,
+                'Bands = periods\nLines = discrete events\nTravel = translucent areas',
+                fontsize=7.2, color='#4B5563', va='bottom', linespacing=1.25)
 
     out = FIG / 'fig_4_5_fat_timeline_events.png'
-    fig.savefig(out, dpi=240, bbox_inches='tight')
+    fig.savefig(out, dpi=240)
     plt.close(fig)
     return out
 
@@ -298,10 +322,10 @@ def build_pdf(df, metrics, monthly, phases, figs):
         styles[s].fontName=bold_font
     styles.add(ParagraphStyle(name='Small', fontName=normal_font, fontSize=8, leading=10))
     styles.add(ParagraphStyle(name='Caption', fontName=normal_font, fontSize=8, leading=10, textColor=colors.HexColor('#4B5563')))
-    pdf=OUT/'Personal_Weight_Regulation_Model_v0.4.pdf'
+    pdf=OUT/'Personal_Weight_Regulation_Model_v0.5.pdf'
     doc=SimpleDocTemplate(str(pdf), pagesize=A4, rightMargin=1.4*cm, leftMargin=1.4*cm, topMargin=1.2*cm, bottomMargin=1.2*cm)
     els=[]
-    els.append(Paragraph('Draft v0.4 - Chapter 4: Body Composition Analysis', styles['Heading1']))
+    els.append(Paragraph('Draft v0.5 - Chapter 4: Body Composition Analysis', styles['Heading1']))
     els.append(Paragraph('Personal Weight Regulation Model / N-of-1 Longitudinal Case Study', styles['Small']))
     els.append(Spacer(1,0.35*cm))
     els.append(Paragraph('4.1 Dataset', styles['Heading2']))
@@ -378,7 +402,7 @@ def main():
         ('Fat Mass trajectory, daily values and 7-day rolling mean.', plot_fat(df)),
         ('Lean Mass trajectory, daily values and 7-day rolling mean.', plot_lean(df)),
         ('Weight and Fat Mass change relative to September baseline.', plot_delta(df)),
-        ('Fat Mass with major events and intervention periods. Colored vertical bands indicate event/intervention periods; the right-side legend table maps colors to categories.', plot_timeline(df, ev)),
+        ('Fat Mass with major events and intervention periods. Intervention bands show long-running medication/HRT intervals; vertical markers show discrete clinical/training events; translucent areas show travel periods. The Event reference maps symbols to event names.', plot_timeline(df, ev)),
         ('Rolling 28-day Fat Mass growth rate, expressed as g/week.', plot_growth_rate(df)),
     ]
     pdf=build_pdf(df, metrics, monthly, phases, figs)
