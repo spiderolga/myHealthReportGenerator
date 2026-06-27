@@ -61,6 +61,26 @@ def load_events() -> pd.DataFrame:
     return ev
 
 
+
+
+
+def style_time_axis(ax):
+    """Shared compact styling for longitudinal plots."""
+    ax.grid(True, alpha=.22)
+    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
+    ax.tick_params(axis='x', rotation=35, labelsize=8.8)
+    ax.tick_params(axis='y', labelsize=8.8)
+
+
+def save_compact(fig, out):
+    """Save figures with less unused whitespace and larger plot area."""
+    fig.subplots_adjust(left=0.075, right=0.985, top=0.90, bottom=0.18)
+    fig.savefig(out, dpi=220)
+    plt.close(fig)
+    return out
+
+
 def monthly_summary(df: pd.DataFrame) -> pd.DataFrame:
     x = df.set_index('Date').resample('MS').agg({
         'Weight kg':'mean', 'Fat mass kg':'mean', 'Lean mass kg':'mean'
@@ -115,176 +135,156 @@ def phase_summary(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def plot_weight(df: pd.DataFrame):
-    fig, ax = plt.subplots(figsize=(10,4.5))
+    fig, ax = plt.subplots(figsize=(11.2,4.8))
     ax.plot(df['Date'], df['Weight kg'], alpha=.25, linewidth=.8, label='Daily')
     ax.plot(df['Date'], df['Weight_7d_calc'], linewidth=2.2, label='7-day mean')
-    ax.set_title('Weight trajectory')
+    ax.set_title('Weight trajectory', pad=8, fontsize=12)
     ax.set_ylabel('kg')
-    ax.grid(True, alpha=.25)
-    ax.legend(frameon=False)
-    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
-    fig.autofmt_xdate()
+    style_time_axis(ax)
+    ax.legend(frameon=False, fontsize=8.8)
     out=FIG/'fig_4_1_weight_trajectory.png'
-    fig.tight_layout(); fig.savefig(out, dpi=200); plt.close(fig); return out
+    return save_compact(fig, out)
 
 
 def plot_fat(df: pd.DataFrame):
-    fig, ax = plt.subplots(figsize=(10,4.5))
+    fig, ax = plt.subplots(figsize=(11.2,4.8))
     ax.plot(df['Date'], df['Fat mass kg'], alpha=.25, linewidth=.8, label='Daily')
     ax.plot(df['Date'], df['Fat_7d'], linewidth=2.2, label='7-day mean')
-    ax.set_title('Fat Mass trajectory')
+    ax.set_title('Fat Mass trajectory', pad=8, fontsize=12)
     ax.set_ylabel('kg')
-    ax.grid(True, alpha=.25); ax.legend(frameon=False)
-    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1)); ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
-    fig.autofmt_xdate()
+    style_time_axis(ax); ax.legend(frameon=False, fontsize=8.8)
     out=FIG/'fig_4_2_fat_trajectory.png'
-    fig.tight_layout(); fig.savefig(out, dpi=200); plt.close(fig); return out
+    return save_compact(fig, out)
 
 
 def plot_lean(df: pd.DataFrame):
-    fig, ax = plt.subplots(figsize=(10,4.5))
+    fig, ax = plt.subplots(figsize=(11.2,4.8))
     ax.plot(df['Date'], df['Lean mass kg'], alpha=.25, linewidth=.8, label='Daily')
     ax.plot(df['Date'], df['Lean_7d'], linewidth=2.2, label='7-day mean')
-    ax.set_title('Lean Mass trajectory')
+    ax.set_title('Lean Mass trajectory', pad=8, fontsize=12)
     ax.set_ylabel('kg')
-    ax.grid(True, alpha=.25); ax.legend(frameon=False)
-    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1)); ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
-    fig.autofmt_xdate()
+    style_time_axis(ax); ax.legend(frameon=False, fontsize=8.8)
     out=FIG/'fig_4_3_lean_trajectory.png'
-    fig.tight_layout(); fig.savefig(out, dpi=200); plt.close(fig); return out
+    return save_compact(fig, out)
 
 
 def plot_delta(df: pd.DataFrame):
-    fig, ax = plt.subplots(figsize=(10,4.5))
+    fig, ax = plt.subplots(figsize=(11.2,4.8))
     ax.plot(df['Date'], df['Delta_Weight_from_start'], linewidth=2, label='Weight Δ from Sep baseline')
     ax.plot(df['Date'], df['Delta_Fat_from_start'], linewidth=2, label='Fat Mass Δ from Sep baseline')
     ax.axhline(0, color='black', linewidth=.8, alpha=.5)
-    ax.set_title('Weight and Fat Mass change from baseline')
+    ax.set_title('Weight and Fat Mass change from baseline', pad=8, fontsize=12)
     ax.set_ylabel('kg change')
-    ax.grid(True, alpha=.25); ax.legend(frameon=False)
-    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1)); ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
-    fig.autofmt_xdate()
+    style_time_axis(ax); ax.legend(frameon=False, fontsize=8.8)
     out=FIG/'fig_4_4_delta_weight_fat.png'
-    fig.tight_layout(); fig.savefig(out, dpi=200); plt.close(fig); return out
+    return save_compact(fig, out)
 
 
 def plot_timeline(df: pd.DataFrame, ev: pd.DataFrame):
-    """Fat mass timeline with event periods and a compact Event reference.
-
-    Visual grammar:
-    - intervention bands: long medication/HRT periods;
-    - vertical markers: discrete clinical/training events;
-    - translucent areas: travel periods.
-    """
+    """Fat mass timeline with intervention periods, clinical events, and travel areas."""
     import matplotlib.gridspec as gridspec
     import textwrap
 
-    fig = plt.figure(figsize=(12.6, 5.9))
-    gs = gridspec.GridSpec(1, 2, width_ratios=[5.05, 1.35], wspace=0.08)
+    fig = plt.figure(figsize=(13.2, 5.55))
+    # Event reference column is intentionally narrow (~18%).
+    gs = gridspec.GridSpec(1, 2, width_ratios=[5.55, 1.20], wspace=0.06)
     ax = fig.add_subplot(gs[0, 0])
     ax_ref = fig.add_subplot(gs[0, 1])
     ax_ref.axis('off')
 
     # Main Fat Mass line.
-    ax.plot(df['Date'], df['Fat_7d'], linewidth=2.5, color='#111827', zorder=6)
+    ax.plot(df['Date'], df['Fat_7d'], linewidth=2.45, color='#111827', zorder=6)
 
-    # Figure 4.5 intentionally shows a curated timeline, not every event in events.csv.
-    # Dates are mirrored from data/events.csv and discussion notes.
+    # Curated timeline. Dates mirrored from data/events.csv and discussion notes.
     intervention_bands = [
-        ('Ozempic (0.5 mg -> taper -> stop)', pd.Timestamp('2025-09-01'), pd.Timestamp('2025-12-31'), '#4F46E5'),
-        ('HRT 0.5 mg', pd.Timestamp('2026-01-01'), pd.Timestamp('2026-03-31'), '#10B981'),
-        ('HRT 1.0 mg', pd.Timestamp('2026-04-01'), pd.Timestamp('2026-06-25'), '#059669'),
+        ('Ozempic (0.5 mg -> taper -> stop)', 'Sep-Dec 2025', pd.Timestamp('2025-09-01'), pd.Timestamp('2025-12-31'), '#4F46E5'),
+        ('HRT 0.5 mg', 'Started Jan 2026', pd.Timestamp('2026-01-01'), pd.Timestamp('2026-03-31'), '#86EFAC'),
+        ('HRT 1.0 mg', 'Started Apr 2026', pd.Timestamp('2026-04-01'), pd.Timestamp('2026-06-25'), '#047857'),
     ]
     event_markers = [
-        ('Strength training started', pd.Timestamp('2025-11-01'), '#7C3AED', '-'),
-        ('RA flare (Mar-Apr 2026)', pd.Timestamp('2026-03-16'), '#DC2626', '-'),
-        ('Medrol course', pd.Timestamp('2026-03-30'), '#B91C1C', '--'),
+        ('Strength training started', 'Nov 2025', pd.Timestamp('2025-11-01'), '#7C3AED', '-'),
+        ('RA flare (Mar-Apr 2026)', 'Mar-Apr 2026', pd.Timestamp('2026-03-16'), '#DC2626', '-'),
+        ('Medrol course', 'Mar-Apr 2026', pd.Timestamp('2026-03-30'), '#B91C1C', '--'),
     ]
     travel_periods = [
-        ('Winter Trip', pd.Timestamp('2026-02-06'), pd.Timestamp('2026-02-23'), '#F59E0B'),
-        ('Italy Trip 4', pd.Timestamp('2026-04-19'), pd.Timestamp('2026-05-02'), '#F59E0B'),
-        ('Italy Trip 5', pd.Timestamp('2026-05-12'), pd.Timestamp('2026-05-30'), '#F59E0B'),
+        ('Winter Trip', '', pd.Timestamp('2026-02-06'), pd.Timestamp('2026-02-23'), '#F59E0B'),
+        ('Italy Trip 4', '', pd.Timestamp('2026-04-19'), pd.Timestamp('2026-05-02'), '#F59E0B'),
+        ('Italy Trip 5', '', pd.Timestamp('2026-05-12'), pd.Timestamp('2026-05-30'), '#F59E0B'),
     ]
 
     # Draw interventions first, then travel, then vertical event markers.
-    for label, start, end, color in intervention_bands:
-        ax.axvspan(start, end, color=color, alpha=0.12, linewidth=0, zorder=1)
-    for label, start, end, color in travel_periods:
-        ax.axvspan(start, end, color=color, alpha=0.18, linewidth=0, zorder=2)
-    for label, date, color, linestyle in event_markers:
-        ax.axvline(date, color=color, linewidth=1.6, linestyle=linestyle, alpha=0.85, zorder=4)
+    for label, note, start, end, color in intervention_bands:
+        alpha = 0.16 if 'HRT 1.0' not in label else 0.20
+        ax.axvspan(start, end, color=color, alpha=alpha, linewidth=0, zorder=1)
+    for label, note, start, end, color in travel_periods:
+        ax.axvspan(start, end, color=color, alpha=0.19, linewidth=0, zorder=2)
+    for label, note, date, color, linestyle in event_markers:
+        ax.axvline(date, color=color, linewidth=1.75, linestyle=linestyle, alpha=0.90, zorder=4)
 
-    ax.set_title('Fat Mass trajectory with intervention and event timeline', pad=10)
+    ax.set_title('Fat Mass trajectory with intervention and event timeline', pad=8, fontsize=12)
     ax.set_ylabel('Fat Mass, kg')
-    ax.grid(True, alpha=.22, zorder=0)
-    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
-    ax.tick_params(axis='x', rotation=35, labelsize=8.5)
-    ax.tick_params(axis='y', labelsize=8.5)
+    style_time_axis(ax)
 
     # Compact right-side reference table.
-    ax_ref.text(0.02, 0.985, 'Event reference', transform=ax_ref.transAxes, fontsize=10.5, fontweight='bold', va='top', color='#111827')
+    ax_ref.text(0.00, 0.985, 'Event reference', transform=ax_ref.transAxes, fontsize=10.1, fontweight='bold', va='top', color='#111827')
 
     def ref_header(y, text):
-        ax_ref.text(0.02, y, text, transform=ax_ref.transAxes, fontsize=8.7, fontweight='bold', va='top', color='#374151')
-        return y - 0.050
+        ax_ref.text(0.00, y, text, transform=ax_ref.transAxes, fontsize=8.4, fontweight='bold', va='top', color='#374151')
+        return y - 0.046
 
-    def ref_band(y, color, text, alpha=0.22):
-        ax_ref.add_patch(plt.Rectangle((0.02, y-0.030), 0.095, 0.030,
+    def label_text(label, note):
+        return label if not note else f'{label}\n{note}'
+
+    def ref_band(y, color, label, note='', alpha=0.25):
+        ax_ref.add_patch(plt.Rectangle((0.00, y-0.030), 0.060, 0.028,
                                        transform=ax_ref.transAxes,
                                        facecolor=color, alpha=alpha,
-                                       edgecolor=color, linewidth=0.8))
-        wrapped = '\n'.join(textwrap.wrap(text, width=23))
-        ax_ref.text(0.14, y-0.015, wrapped, transform=ax_ref.transAxes,
-                    fontsize=7.7, va='center', color='#111827', linespacing=1.20)
-        return y - (0.047 + 0.026 * max(0, wrapped.count('\n')))
+                                       edgecolor=color, linewidth=0.7))
+        wrapped = '\n'.join(textwrap.wrap(label_text(label, note), width=24, break_long_words=False))
+        ax_ref.text(0.075, y-0.016, wrapped, transform=ax_ref.transAxes,
+                    fontsize=7.25, va='center', color='#111827', linespacing=1.13)
+        return y - (0.043 + 0.022 * max(0, wrapped.count('\n')))
 
-    def ref_line(y, color, text, linestyle='-'):
-        ax_ref.plot([0.02, 0.115], [y-0.016, y-0.016], transform=ax_ref.transAxes,
-                    color=color, linewidth=1.8, linestyle=linestyle, solid_capstyle='butt')
-        wrapped = '\n'.join(textwrap.wrap(text, width=23))
-        ax_ref.text(0.14, y-0.016, wrapped, transform=ax_ref.transAxes,
-                    fontsize=7.7, va='center', color='#111827', linespacing=1.20)
-        return y - (0.047 + 0.026 * max(0, wrapped.count('\n')))
+    def ref_line(y, color, label, note='', linestyle='-'):
+        ax_ref.plot([0.00, 0.060], [y-0.016, y-0.016], transform=ax_ref.transAxes,
+                    color=color, linewidth=1.75, linestyle=linestyle, solid_capstyle='butt')
+        wrapped = '\n'.join(textwrap.wrap(label_text(label, note), width=24, break_long_words=False))
+        ax_ref.text(0.075, y-0.016, wrapped, transform=ax_ref.transAxes,
+                    fontsize=7.25, va='center', color='#111827', linespacing=1.13)
+        return y - (0.043 + 0.022 * max(0, wrapped.count('\n')))
 
     y = 0.92
     y = ref_header(y, 'Interventions')
-    for text, _, _, color in intervention_bands:
-        y = ref_band(y, color, text, alpha=0.25)
-    y = ref_line(y, '#7C3AED', 'Strength training started')
+    for label, note, _, _, color in intervention_bands:
+        y = ref_band(y, color, label, note, alpha=0.30 if 'HRT 1.0' in label else 0.25)
+    y = ref_line(y, '#7C3AED', 'Strength training started', 'Nov 2025')
 
-    y -= 0.018
+    y -= 0.016
     y = ref_header(y, 'Clinical events')
     y = ref_line(y, '#DC2626', 'RA flare (Mar-Apr 2026)')
-    y = ref_line(y, '#B91C1C', 'Medrol course', linestyle='--')
+    y = ref_line(y, '#B91C1C', 'Medrol course', 'Mar-Apr 2026', linestyle='--')
 
-    y -= 0.018
+    y -= 0.016
     y = ref_header(y, 'Travel')
-    # Travel labels intentionally stay short, per editorial review.
-    for text, _, _, color in travel_periods:
-        y = ref_band(y, color, text, alpha=0.28)
-
-    ax_ref.text(0.02, 0.045,
-                'Bands = periods\nLines = discrete events\nTravel = translucent areas',
-                fontsize=7.2, color='#4B5563', va='bottom', linespacing=1.25)
+    # Travel labels intentionally stay short.
+    for label, note, _, _, color in travel_periods:
+        y = ref_band(y, color, label, alpha=0.30)
 
     out = FIG / 'fig_4_5_fat_timeline_events.png'
-    fig.savefig(out, dpi=240)
+    fig.subplots_adjust(left=0.065, right=0.99, top=0.91, bottom=0.17)
+    fig.savefig(out, dpi=250)
     plt.close(fig)
     return out
 
 def plot_growth_rate(df: pd.DataFrame):
-    fig, ax = plt.subplots(figsize=(10,4.5))
+    fig, ax = plt.subplots(figsize=(11.2,4.8))
     ax.plot(df['Date'], df['Fat_g_per_week_28d'], linewidth=2)
     ax.axhline(0, color='black', linewidth=.8, alpha=.5)
-    ax.set_title('Fat Mass growth rate estimated over rolling 28-day windows')
+    ax.set_title('Fat Mass growth rate estimated over rolling 28-day windows', pad=8, fontsize=12)
     ax.set_ylabel('g/week')
-    ax.grid(True, alpha=.25)
-    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1)); ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
-    fig.autofmt_xdate()
+    style_time_axis(ax)
     out=FIG/'fig_4_6_fat_growth_rate.png'
-    fig.tight_layout(); fig.savefig(out, dpi=200); plt.close(fig); return out
+    return save_compact(fig, out)
 
 
 def table_from_df(df, widths=None):
@@ -322,10 +322,10 @@ def build_pdf(df, metrics, monthly, phases, figs):
         styles[s].fontName=bold_font
     styles.add(ParagraphStyle(name='Small', fontName=normal_font, fontSize=8, leading=10))
     styles.add(ParagraphStyle(name='Caption', fontName=normal_font, fontSize=8, leading=10, textColor=colors.HexColor('#4B5563')))
-    pdf=OUT/'Personal_Weight_Regulation_Model_v0.5.pdf'
+    pdf=OUT/'Personal_Weight_Regulation_Model_v0.6.pdf'
     doc=SimpleDocTemplate(str(pdf), pagesize=A4, rightMargin=1.4*cm, leftMargin=1.4*cm, topMargin=1.2*cm, bottomMargin=1.2*cm)
     els=[]
-    els.append(Paragraph('Draft v0.5 - Chapter 4: Body Composition Analysis', styles['Heading1']))
+    els.append(Paragraph('Draft v0.6 - Chapter 4: Body Composition Analysis', styles['Heading1']))
     els.append(Paragraph('Personal Weight Regulation Model / N-of-1 Longitudinal Case Study', styles['Small']))
     els.append(Spacer(1,0.35*cm))
     els.append(Paragraph('4.1 Dataset', styles['Heading2']))

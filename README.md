@@ -4,7 +4,7 @@ This folder contains a reproducible report generator for the project:
 
 **Body Composition Regulation After Successful Weight Loss - N-of-1 Case Study**
 
-Current scope: Draft v0.5, Sprint 1 - Body Composition Analysis.
+Current scope: Draft v0.6, Sprint 1 - Body Composition Analysis.
 
 ## Inputs
 
@@ -26,7 +26,7 @@ gradle generateReport      # if Gradle is installed
 
 ## Outputs
 
-- `output/Personal_Weight_Regulation_Model_v0.5.pdf`
+- `output/Personal_Weight_Regulation_Model_v0.6.pdf`
 - `output/body_composition_metrics.csv`
 - `output/monthly_body_composition.csv`
 - `output/phase_summary.csv`
@@ -58,7 +58,7 @@ gradle generateReport -PpythonExecutable=python3
 
 ## Changelog
 
-### v0.5
+### v0.6
 
 - Redesigned Figure 4.5.
 - Added compact right-side **Event reference** table.

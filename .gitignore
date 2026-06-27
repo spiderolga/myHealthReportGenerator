@@ -1,18 +1,22 @@
-myHealthGen.iml
 # Python
 .venv/
 __pycache__/
-*.pyc
+*.py[cod]
+.pytest_cache/
 
-# IntelliJ
+# IDE
 .idea/
+.vscode/
+myHealthGen.iml
 
 # Build
 output/
-figures/
-*.pdf
+build/
+dist/
 .gradle/
 
+# Generated reports
+*.pdf
 # OS
 .DS_Store
 Thumbs.db

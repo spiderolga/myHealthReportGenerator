@@ -5,7 +5,7 @@ plugins {
 ext {
     pythonExecutable = providers.gradleProperty('pythonExecutable').orElse('python')
     reportScript = file('src/generate_report.py')
-    reportPdf = file('output/Personal_Weight_Regulation_Model_v0.5.pdf')
+    reportPdf = file('output/Personal_Weight_Regulation_Model_v0.6.pdf')
 }
 
 tasks.register('installPythonDeps', Exec) {
