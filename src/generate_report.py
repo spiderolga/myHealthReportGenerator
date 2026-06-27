@@ -198,8 +198,8 @@ def plot_timeline(df: pd.DataFrame, ev: pd.DataFrame):
     # Curated timeline. Dates mirrored from data/events.csv and discussion notes.
     intervention_bands = [
         ('Ozempic (0.5 mg -> taper -> stop)', 'Sep-Dec 2025', pd.Timestamp('2025-09-01'), pd.Timestamp('2025-12-31'), '#4F46E5'),
-        ('HRT 0.5 mg', 'Started Jan 2026', pd.Timestamp('2026-01-01'), pd.Timestamp('2026-03-31'), '#86EFAC'),
-        ('HRT 1.0 mg', 'Started Apr 2026', pd.Timestamp('2026-04-01'), pd.Timestamp('2026-06-25'), '#047857'),
+        ('HRT 0.5 mg', 'from 06.01.2026', pd.Timestamp('2026-01-06'), pd.Timestamp('2026-03-31'), '#86EFAC'),
+        ('HRT 1.0 mg', 'from 20.04.2026', pd.Timestamp('2026-04-20'), pd.Timestamp('2026-06-25'), '#047857'),
     ]
     event_markers = [
         ('Strength training started', 'Nov 2025', pd.Timestamp('2025-11-01'), '#7C3AED', '-'),
@@ -208,8 +208,8 @@ def plot_timeline(df: pd.DataFrame, ev: pd.DataFrame):
     ]
     travel_periods = [
         ('Winter Trip', '', pd.Timestamp('2026-02-06'), pd.Timestamp('2026-02-23'), '#F59E0B'),
-        ('Italy Trip 4', '', pd.Timestamp('2026-04-19'), pd.Timestamp('2026-05-02'), '#F59E0B'),
-        ('Italy Trip 5', '', pd.Timestamp('2026-05-12'), pd.Timestamp('2026-05-30'), '#F59E0B'),
+        ('Italy Trip April', '', pd.Timestamp('2026-04-19'), pd.Timestamp('2026-05-02'), '#F59E0B'),
+        ('Italy Trip May', '', pd.Timestamp('2026-05-12'), pd.Timestamp('2026-05-30'), '#F59E0B'),
     ]
 
     # Draw interventions first, then travel, then vertical event markers.
