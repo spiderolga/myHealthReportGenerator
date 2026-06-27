@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "my-health-gen"
-version = "0.6.1"
-description = "Personal weight regulation report generator"
+version = "0.7.1"
+description = "Personal health analytics report generator"
 requires-python = ">=3.10"
 dependencies = [
     "pandas",
@@ -20,3 +20,6 @@ generate-health-report = "generate_report:main"
 [tool.setuptools]
 package-dir = {"" = "src"}
 py-modules = ["generate_report"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
