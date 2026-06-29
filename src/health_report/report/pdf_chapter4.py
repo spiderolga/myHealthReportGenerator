@@ -127,7 +127,7 @@ def build_pdf(df, metrics, monthly, phases, figs, nutrition_coverage=None, nutri
     ], columns=["Finding", "Evidence", "Confidence"])
     for col in evd.columns:
         evd[col] = evd[col].apply(lambda x: Paragraph(str(x), styles["Small"]))
-    els.append(table_from_df(evd, widths=[5.0 * cm, 6.6 * cm, 5.2 * cm]))
+    els.append(table_from_df(evd, widths=[5.0 * cm, 5.2 * cm, 6.6 * cm]))
 
 
     # Chapter 5 - Nutrition data completeness and phases
