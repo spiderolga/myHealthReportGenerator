@@ -47,6 +47,7 @@ def table_from_df(df, widths=None):
         body.append(out)
     data = [list(df.columns)] + body
     t = Table(data, colWidths=widths)
+    t.hAlign = "LEFT"
     t.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#E5E7EB")),
         ("FONTNAME", (0, 0), (-1, 0), "DejaVu-Bold" if "DejaVu-Bold" in pdfmetrics.getRegisteredFontNames() else "Helvetica-Bold"),
@@ -157,7 +158,7 @@ def build_pdf(df, metrics, monthly, phases, figs, nutrition_coverage=None, nutri
             macro = macro.rename(columns={"Logged days": "Logged", "Coverage %": "Cov. %"})
             for col in macro.columns:
                 macro[col] = macro[col].apply(lambda x: Paragraph(str(x), styles["Small"]))
-            els.append(table_from_df(macro, widths=[2.8 * cm, 3.4 * cm, 1.25 * cm, 1.25 * cm, 1.45 * cm, 1.5 * cm, 1.3 * cm, 1.5 * cm, 1.4 * cm]))
+            els.append(table_from_df(macro, widths=[4.0 * cm, 2.75 * cm, 1.45 * cm, 1.45 * cm, 1.55 * cm, 1.60 * cm, 1.35 * cm, 1.55 * cm, 1.45 * cm]))
             els.append(Spacer(1, 0.25 * cm))
             density_cols = ["Phase", "Protein g/1000 kcal", "PEI g/100 kcal"]
             density_cols = [c for c in density_cols if c in nsum.columns]

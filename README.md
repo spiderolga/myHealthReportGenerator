@@ -4,7 +4,7 @@ Reproducible Python report generator for the project:
 
 **Body Composition Regulation After Successful Weight Loss - N-of-1 Case Study**
 
-Current scope: Draft v0.8.0 - Chapter 4 Body Composition Analysis + Chapter 5 nutrition data completeness and phase detection.
+Current scope: Draft v0.8.1 - Chapter 4 Body Composition Analysis + Chapter 5 nutrition data completeness and phase detection.
 
 ## Version 2 architecture
 
@@ -89,7 +89,7 @@ python src/generate_report.py
 ## Outputs
 
 - `data/processed/master_dataframe.csv`
-- `output/Personal_Weight_Regulation_Model_v0.8.0.pdf`
+- `output/Personal_Weight_Regulation_Model_v0.8.1.pdf`
 - `output/body_composition_metrics.csv`
 - `output/monthly_body_composition.csv`
 - `output/phase_summary.csv`

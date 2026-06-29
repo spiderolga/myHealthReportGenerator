@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.8.1
+
+### Changed
+- Feature #23: widened Table 5.2 Phase column and narrowed the Period column.
+- Feature #24: all PDF tables are left-aligned instead of centered when table width is smaller than the page content area.
+- Updated report version to `v0.8.1`.
+
+### Verified
+- Report builds successfully.
+- Chapter 5 tables render without clipping.
+
 ## v0.8.0
 
 ### Added
